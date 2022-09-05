@@ -19,4 +19,4 @@ mybatis-plus:
     db-config:
       id-type: ASSIGN_ID
 reggie:
-  path: D:\img\
+  path: C:\Users\MECHREVO\Desktop\瑞吉\img\
