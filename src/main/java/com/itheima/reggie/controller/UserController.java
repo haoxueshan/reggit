@@ -40,8 +40,8 @@ public class UserController {
             String code = ValidateCodeUtils.generateValidateCode(4).toString();
             log.info("code={}",code);
 
-//            调用阿里云提供的短信服务API完成发送短信
-            SMSUtils.sendMessage("验证码短信","SMS_251105653",phone,code);
+            //调用阿里云提供的短信服务API完成发送短信
+            //SMSUtils.sendMessage("瑞吉外卖","SMS_251105653",phone,code);
 
             //需要将生成的验证码保存到Session
             session.setAttribute(phone,code);

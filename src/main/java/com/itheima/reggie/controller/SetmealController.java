@@ -109,16 +109,45 @@ public class SetmealController {
         return R.success("套餐数据删除成功");
     }
 
+    /**
+     * 根据条件查询套餐数据
+     * @param setmeal
+     * @return
+     */
     @GetMapping("/list")
-    public R<List<Setmeal>> list(Setmeal setmeal) {
-        log.info("setmeal:{}", setmeal);
-        //条件构造器
+    public R<List<Setmeal>> list(Setmeal setmeal){
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(StringUtils.isNotEmpty(setmeal.getName()), Setmeal::getName, setmeal.getName());
-        queryWrapper.eq(null != setmeal.getCategoryId(), Setmeal::getCategoryId, setmeal.getCategoryId());
-        queryWrapper.eq(null != setmeal.getStatus(), Setmeal::getStatus, setmeal.getStatus());
+        queryWrapper.eq(setmeal.getCategoryId() != null,Setmeal::getCategoryId,setmeal.getCategoryId());
+        queryWrapper.eq(setmeal.getStatus() != null,Setmeal::getStatus,setmeal.getStatus());
         queryWrapper.orderByDesc(Setmeal::getUpdateTime);
 
-        return R.success(setmealService.list(queryWrapper));
+        List<Setmeal> list = setmealService.list(queryWrapper);
+
+        return R.success(list);
+    }
+
+    @PostMapping("/status/{status}")
+    public R<String> sale(@PathVariable int status,String[] ids){
+        for (String id:ids){
+            Setmeal setmeal = setmealService.getById(id);
+            setmeal.setStatus(status);
+            setmealService.updateById(setmeal);
+        }
+        return R.success("修改成功");
+    }
+
+    //根据套餐id查询套餐套餐
+    @GetMapping("/{id}")
+    public R<SetmealDto> getById(@PathVariable Long id){
+        SetmealDto setmealDto=setmealService.getByIdWithDish(id);
+
+        return R.success(setmealDto);
+    }
+
+    //修改套餐
+    @PutMapping
+    public R<String> update(@RequestBody SetmealDto setmealDto){
+        setmealService.updateWithDish(setmealDto);
+        return R.success("修改成功");
     }
 }
