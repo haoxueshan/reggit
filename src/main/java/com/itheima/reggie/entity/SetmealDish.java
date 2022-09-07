@@ -39,6 +39,10 @@ public class SetmealDish implements Serializable {
     //排序
     private Integer sort;
 
+    //删除
+    @TableField(fill = FieldFill.INSERT)
+    private  Integer isDeleta;
+
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

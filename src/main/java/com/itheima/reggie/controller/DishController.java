@@ -67,6 +67,7 @@ public class DishController {
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
         //添加过滤条件
         queryWrapper.like(name != null,Dish::getName,name);
+        queryWrapper.eq(Dish::getIsDeleta,0);
         //添加排序条件
         queryWrapper.orderByDesc(Dish::getUpdateTime);
 
@@ -138,6 +139,7 @@ public class DishController {
         queryWrapper.eq(dish.getCategoryId() != null ,Dish::getCategoryId,dish.getCategoryId());
         //添加条件，查询状态为1（起售状态）的菜品
         queryWrapper.eq(Dish::getStatus,1);
+        queryWrapper.eq(Dish::getIsDeleta,0);
 
         //添加排序条件
         queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
@@ -181,11 +183,14 @@ public class DishController {
         }
         return R.success("修改成功");
     }
+
     //删除菜品
     @DeleteMapping
     public R<String> delete(String[] ids){
         for (String id:ids) {
-            dishService.removeById(id);
+            Dish dish = dishService.getById(id);
+            dish.setIsDeleta(1);
+            dishService.updateById(dish);
         }
         return R.success("删除成功");
     }

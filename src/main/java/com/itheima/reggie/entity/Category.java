@@ -32,6 +32,10 @@ public class Category implements Serializable {
     //顺序
     private Integer sort;
 
+    //是否删除
+    @TableField(fill = FieldFill.INSERT)
+    private Integer isDeleta;
+
 
     //创建时间
     @TableField(fill = FieldFill.INSERT)

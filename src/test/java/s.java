@@ -1,28 +1,23 @@
 public class s {
-    public int thirdMax(int[] nums) {
-        Long oneNum=Long.MIN_VALUE;
-        Long twoNum=Long.MIN_VALUE;
-        Long three=Long.MIN_VALUE;
-        for(int i:nums){
-            if(oneNum>=i){
-                if(twoNum>i && oneNum!=i){
-                    if(three<i){
-                        three=(long)i;
-                    }
-                }else if(twoNum<i && oneNum!=i){
-                    three=twoNum;
-                    twoNum=(long)i;
-                }
-            }else{
-                three=twoNum;
-                twoNum=oneNum;
-                oneNum=(long)i;
-            }
+    public String addStrings(String num1, String num2) {
+        int i=num1.length()-1;
+        int j=num2.length()-1;
+        int add=0;
+        StringBuilder sum=new StringBuilder();
+        while(i>=0 || j>=0){
+            int n1=i>=0? num1.charAt(i):0;
+            int n2=j>=0? num2.charAt(j):0;
+            int tmp=n1+n2+add;
+            add=tmp/10;
+            sum.append(tmp%10);
         }
 
-        if(three!=Long.MIN_VALUE){
-            return Math.toIntExact(three);
-        }
-        return Math.toIntExact(oneNum);
+        return sum.reverse().toString();
+
+    }
+
+    public static void main(String[] args) {
+        int i=2%10;
+        System.out.println(i);
     }
 }

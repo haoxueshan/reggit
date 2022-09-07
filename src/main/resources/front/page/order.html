@@ -29,7 +29,7 @@
                     v-model="loading"
                     :finished="finished"
                     finished-text="没有更多了"
-                    @load="getList"
+
                     >
                     <van-cell v-for="(order,index) in orderList" :key="index" class="item">
                         <div class="timeStatus">
@@ -85,7 +85,7 @@
             },
             computed:{},
             created(){
-                this.initData()
+                 this.hxs()
             },
             mounted(){},
             methods:{
@@ -100,7 +100,7 @@
                         history.go(-1)
                     }
                 },
-                initData(){
+                hxs(){
                     this.getList()
                 },
                 async getList(){

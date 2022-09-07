@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
@@ -37,7 +38,8 @@ public class UserController {
 
         if(StringUtils.isNotEmpty(phone)){
             //生成随机的4位验证码
-            String code = ValidateCodeUtils.generateValidateCode(4).toString();
+            //String code = ValidateCodeUtils.generateValidateCode(4).toString();
+            String code ="1234";
             log.info("code={}",code);
 
             //调用阿里云提供的短信服务API完成发送短信
@@ -90,6 +92,17 @@ public class UserController {
             return R.success(user);
         }
         return R.error("登录失败");
+    }
+
+    /*
+    * 退出登陆
+    * */
+
+    @PostMapping("/loginout")
+    public R<String> logout(HttpServletRequest request){
+        //清理Session中保存的当前登录员工的id
+        request.getSession().removeAttribute("user");
+        return R.success("退出成功");
     }
 
 }

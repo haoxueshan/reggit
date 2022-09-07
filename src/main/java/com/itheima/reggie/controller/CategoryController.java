@@ -46,6 +46,7 @@ public class CategoryController {
         Page<Category> pageInfo = new Page<>(page,pageSize);
         //条件构造器
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Category::getIsDeleta,0);
         //添加排序条件，根据sort进行排序
         queryWrapper.orderByAsc(Category::getSort);
 
@@ -94,6 +95,7 @@ public class CategoryController {
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         //添加条件
         queryWrapper.eq(category.getType() != null,Category::getType,category.getType());
+        queryWrapper.eq(Category::getIsDeleta,0);
         //添加排序条件
         queryWrapper.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime);
 

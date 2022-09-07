@@ -55,7 +55,10 @@ public class DishServiceImpl extends ServiceImpl<DishMapper,Dish> implements Dis
      */
     public DishDto getByIdWithFlavor(Long id) {
         //查询菜品基本信息，从dish表查询
-        Dish dish = this.getById(id);
+        LambdaQueryWrapper<Dish> DishLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        DishLambdaQueryWrapper.eq(Dish::getId,id);
+        DishLambdaQueryWrapper.eq(Dish::getIsDeleta,0);
+        Dish dish = this.getById(DishLambdaQueryWrapper);
 
         DishDto dishDto = new DishDto();
         BeanUtils.copyProperties(dish,dishDto);

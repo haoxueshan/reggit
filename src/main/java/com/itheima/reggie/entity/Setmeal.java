@@ -47,6 +47,10 @@ public class Setmeal implements Serializable {
     //图片
     private String image;
 
+    //删除
+    @TableField(fill = FieldFill.INSERT)
+    private  Integer isDeleta;
+
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

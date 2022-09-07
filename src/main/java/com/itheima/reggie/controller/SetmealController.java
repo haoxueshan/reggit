@@ -66,6 +66,7 @@ public class SetmealController {
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
         //添加查询条件，根据name进行like模糊查询
         queryWrapper.like(name != null,Setmeal::getName,name);
+        queryWrapper.eq(Setmeal::getIsDeleta,0);
         //添加排序条件，根据更新时间降序排列
         queryWrapper.orderByDesc(Setmeal::getUpdateTime);
 
@@ -119,6 +120,7 @@ public class SetmealController {
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(setmeal.getCategoryId() != null,Setmeal::getCategoryId,setmeal.getCategoryId());
         queryWrapper.eq(setmeal.getStatus() != null,Setmeal::getStatus,setmeal.getStatus());
+        queryWrapper.eq(Setmeal::getIsDeleta,0);
         queryWrapper.orderByDesc(Setmeal::getUpdateTime);
 
         List<Setmeal> list = setmealService.list(queryWrapper);
@@ -126,6 +128,7 @@ public class SetmealController {
         return R.success(list);
     }
 
+    //修改套餐状态
     @PostMapping("/status/{status}")
     public R<String> sale(@PathVariable int status,String[] ids){
         for (String id:ids){
