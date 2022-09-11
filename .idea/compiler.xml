@@ -8,13 +8,16 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="cache_demo" />
+        <module name="springdataredis_demo" />
         <module name="reggie" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="cache_demo" target="1.8" />
+      <module name="jedis_demo" target="1.5" />
       <module name="reggie" target="1.8" />
       <module name="reggie_take_out" target="1.8" />
+      <module name="springdataredis_demo" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -22,6 +25,7 @@
       <module name="cache_demo" options="-parameters" />
       <module name="reggie" options="-parameters" />
       <module name="reggie_take_out" options="-parameters" />
+      <module name="springdataredis_demo" options="-parameters" />
     </option>
   </component>
 </project>

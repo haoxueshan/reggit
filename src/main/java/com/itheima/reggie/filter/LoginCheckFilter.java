@@ -4,13 +4,19 @@ import com.alibaba.fastjson.JSON;
 import com.itheima.reggie.common.BaseContext;
 import com.itheima.reggie.common.R;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 检查用户是否已经完成登录
@@ -21,6 +27,11 @@ public class LoginCheckFilter implements Filter{
     //路径匹配器，支持通配符
     public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+
+    //商家客户分别过滤
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
@@ -53,7 +64,8 @@ public class LoginCheckFilter implements Filter{
         }
 
         //4-1、判断登录状态，如果已登录，则直接放行
-        if(request.getSession().getAttribute("employee") != null){
+        //if(request.getSession().getAttribute("employee") != null){
+        if(request.getSession().getAttribute("employee")!=null){
             log.info("用户已登录，用户id为：{}",request.getSession().getAttribute("employee"));
 
             Long empId = (Long) request.getSession().getAttribute("employee");
@@ -63,11 +75,26 @@ public class LoginCheckFilter implements Filter{
             return;
         }
 
+        Cookie[] cookies = request.getCookies();
+        String usercookie="";
+        Boolean userBool=false;
+        for(Cookie cookie:cookies){
+            if(cookie.getName().equals("userid")){
+                if(redisTemplate.hasKey("user" +cookie.getValue())){
+                    usercookie=cookie.getValue();
+                    userBool=true;
+                    break;
+                }
+            }
+        }
         //4-2、判断登录状态，如果已登录，则直接放行
-        if(request.getSession().getAttribute("user") != null){
+        if(userBool){
             log.info("用户已登录，用户id为：{}",request.getSession().getAttribute("user"));
+            //重置缓存时间
+            redisTemplate.expire("user"+usercookie,10,TimeUnit.MINUTES);
 
-            Long userId = (Long) request.getSession().getAttribute("user");
+            Long userId=(Long) redisTemplate.opsForValue().get("user"+usercookie) ;
+            //Long userId = (Long) request.getSession().getAttribute("user");
             BaseContext.setCurrentId(userId);
 
             filterChain.doFilter(request,response);

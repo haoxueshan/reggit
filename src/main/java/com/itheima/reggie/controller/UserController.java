@@ -9,13 +9,17 @@ import com.itheima.reggie.utils.ValidateCodeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -69,7 +73,8 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
-    public R<User> login(@RequestBody Map map, HttpSession session){
+    //@Cacheable(value = "user",key = "#session.id",unless = "#result.code == 0")
+    public R<User> login(@RequestBody Map map, HttpSession session, HttpServletResponse response){
         log.info(map.toString());
 
         //获取手机号
@@ -98,6 +103,12 @@ public class UserController {
                 user.setStatus(1);
                 userService.save(user);
             }
+
+            Cookie userCookie=new Cookie("userid",session.getId());
+            userCookie.setPath("/");
+            userCookie.setMaxAge(24*60*60);
+            redisTemplate.opsForValue().set("user"+session.getId(),user.getId(),10,TimeUnit.MINUTES);
+            response.addCookie(userCookie);
             session.setAttribute("user",user.getId());
             redisTemplate.delete(phone);
             return R.success(user);
@@ -105,12 +116,26 @@ public class UserController {
         return R.error("登录失败");
     }
 
-    /*
-    * 退出登陆
-    * */
-
+    /**
+     * 退出登陆
+      * @param request
+     * @return
+     */
     @PostMapping("/loginout")
+    //@CacheEvict(value = "user",key = "#request.getSession().id")
     public R<String> logout(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        String usercookie="";
+        for(Cookie cookie:cookies){
+            if(cookie.getName().equals("userid")){
+                if(redisTemplate.hasKey("user" +cookie.getValue())){
+                    usercookie=cookie.getValue();
+                    break;
+                }
+            }
+        }
+        //删除缓存中当前员工的信息
+        redisTemplate.delete("user"+usercookie);
         //清理Session中保存的当前登录员工的id
         request.getSession().removeAttribute("user");
         return R.success("退出成功");
